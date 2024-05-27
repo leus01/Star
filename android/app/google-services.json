@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "174144852966",
+    "project_id": "pelicula-25303",
+    "storage_bucket": "pelicula-25303.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:174144852966:android:f26423a9e9fe6ad402fc27",
+        "android_client_info": {
+          "package_name": "com.star.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCFP76iuDad1v1Jkq6tIWxpCrxnDYuVEVM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
