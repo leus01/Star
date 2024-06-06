@@ -1,30 +1,72 @@
-import 'package:firebase_core/firebase_core.dart';
+// ignore_for_file: avoid_print, prefer_const_constructors
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class RegisterScreen extends StatefulWidget {
-  const RegisterScreen({Key? key}) : super(key:key);
+  const RegisterScreen({super.key});
 
   @override
   State<RegisterScreen> createState() => _RegisterScreenState();
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
-  TextEditingController user = TextEditingController();
-  TextEditingController pass = TextEditingController();
+  final TextEditingController user = TextEditingController();
+  final TextEditingController pass = TextEditingController();
 
-  final firebase =  Firebase;
+  final firebase = FirebaseFirestore.instance;
 
   registroUsuario() async {
-    try{
-      await firebase.collection('Users').doc().set()(
-        {
-          "user":user.text,
-          "password":pass.text,
-        }
+    try {
+      await firebase.collection('Users').doc().set({
+        "user": user.text,
+        "password": pass.text,
+      });
+      print('Se registró correctamente');
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text("Aviso"),
+            content: const Text("Se registró correctamente"),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pushReplacementNamed(context, "loginScreen");
+                },
+                child: const Text("Aceptar"),
+              )
+            ],
+          );
+        },
       );
-    }catch (e){
-      print('ERROR...'+e.toString());
+      user.clear();
+      pass.clear();
+    } catch (e) {
+      print('ERROR...' + e.toString());
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('ERROR... ' + e.toString())),
+      );
+    }
+  }
+
+  onRegisterPressed() {
+    if (user.text.isEmpty || pass.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Debe completar los datos')),
+      );
+    } else if (!user.text.contains('@gmail.com')) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content: Text('El correo electrónico debe contener un @gmail.com')),
+      );
+    } else if (pass.text.length < 6) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content: Text('La contraseña debe tener al menos 6 caracteres')),
+      );
+    } else {
+      registroUsuario();
     }
   }
 
@@ -63,16 +105,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           color: Colors.white)),
                   const SizedBox(
                     height: 25,
-                  ),                  
-                  const TextField(
-                    //controller: user,
-                    decoration: InputDecoration(
+                  ),
+                  TextField(
+                    controller: user,
+                    style: const TextStyle(
+                        color: Colors
+                            .white), // darle color al texto dentro del textbox
+                    decoration: const InputDecoration(
                       border: OutlineInputBorder(),
                       labelText: 'Correo electrónico',
                       labelStyle: TextStyle(
                           color: Colors.white70), //titulo del textfield
-                      prefixIcon:
-                          Icon(Icons.text_fields, color: Colors.white70),
+                      /*prefixIcon:
+                          Icon(Icons.text_fields, color: Colors.white70),*/ //icono Tt al lado extremo del textbox
                       contentPadding:
                           EdgeInsets.symmetric(vertical: 16, horizontal: 20),
                     ),
@@ -80,15 +125,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   const SizedBox(
                     height: 10,
                   ),
-                  const TextField(
-                    //controller: pass,
-                    decoration: InputDecoration(
+                  TextField(
+                    controller: pass,
+                    style: const TextStyle(color: Colors.white),
+                    decoration: const InputDecoration(
                       border: OutlineInputBorder(),
                       labelText: 'Contraseña',
                       labelStyle: TextStyle(
                           color: Colors.white70), //titulo del textfield
-                      prefixIcon:
-                          Icon(Icons.text_fields, color: Colors.white70),
+                      /*prefixIcon:
+                          Icon(Icons.text_fields, color: Colors.white70),*/ //icono Tt al lado extremo del textbox
                       fillColor: Colors.white,
                       contentPadding:
                           EdgeInsets.symmetric(vertical: 16, horizontal: 20),
@@ -97,42 +143,43 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   const SizedBox(
                     height: 40,
                   ),
-
-
                   GestureDetector(
-                      onTap: () {
-                        Navigator.pushReplacementNamed(context, "loginScreen");
-                      },
-                      child: Container(
-                        height: size.height * 0.06,
-                        width: size.width * 0.8,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          gradient: const LinearGradient(
-                            colors: [
-                              Color.fromARGB(255, 255, 0, 85),
-                              Color.fromARGB(255, 255, 115, 80)
-                            ],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
+                    onTap: () {
+                      Navigator.pushReplacementNamed(context, "loginScreen");
+                    },
+                    child: Container(
+                      height: size.height * 0.06,
+                      width: size.width * 0.8,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        gradient: const LinearGradient(
+                          colors: [
+                            Color.fromARGB(255, 255, 0, 85),
+                            Color.fromARGB(255, 255, 115, 80)
+                          ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                      ),
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.transparent,
+                          shadowColor: Colors.transparent,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
                           ),
                         ),
-                  
-                      
-                        child:  ElevatedButton(
-                          onPressed: () {
-                          print('enviando...');
-                          registroUsuario();
-                          },
-                          child: const Text(
-                            "Registrate aquí!",
-                            style: TextStyle(
-                                fontWeight: FontWeight.w700,
-                                fontSize: 20,
-                                color: Colors.white),
-                          
-                        ),)
-                      )),
+                        onPressed: onRegisterPressed,
+                        child: const Center(
+                            child: Text("Registrate aquí!",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 20,
+                                  color: Colors.white,
+                                ))),
+                      ),
+                    ),
+                  ),
                   const SizedBox(
                     height: 170,
                   ),

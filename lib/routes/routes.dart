@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:star/screens/home_screen.dart';
 import 'package:star/screens/login_screen.dart';
 import 'package:star/screens/movie_screen.dart';
+import 'package:star/screens/profile_screen.dart';
 import 'package:star/screens/register_screen.dart';
 
 //import 'package:star/screens/screens.dart';
@@ -21,6 +22,8 @@ class AppRouting {
         .addAll({"movieScreen": (BuildContext context) => const MovieScreen()});
     appRoute.addAll(
         {"registerScreen": (BuildContext context) => const RegisterScreen()});
+    appRoute.addAll(
+        {"profileScreen": (BuildContext context) => const ProfileScreen()});
 
     return appRoute;
   }

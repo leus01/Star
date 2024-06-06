@@ -1,12 +1,15 @@
 //import 'package:flutter/cupertino.dart';
+// ignore_for_file: avoid_print, prefer_interpolation_to_compose_strings
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 //import 'package:flutter/widgets.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({Key? key}) : super(key:key);
+  const LoginScreen({super.key});
 
   @override
-  State<LoginScreen>  createState() => _LoginScreenState();
+  State<LoginScreen> createState() => _LoginScreenState();
 }
 
 class _LoginScreenState extends State<LoginScreen> {
@@ -21,6 +24,62 @@ class _LoginScreenState extends State<LoginScreen> {
     _passwordController.dispose();
     super.dispose();
   }*/
+
+  final TextEditingController user = TextEditingController();
+  final TextEditingController pass = TextEditingController();
+
+  validarDatos() async {
+    try {
+      CollectionReference ref = FirebaseFirestore.instance.collection('Users');
+      QuerySnapshot usuario = await ref.get();
+
+      // ignore: prefer_is_empty
+      if (usuario.docs.isNotEmpty) {
+        for (var cursor in usuario.docs) {
+          if (cursor.get('user') == user.text) {
+            print('Usuario encontrado');
+            if (cursor.get('password') == pass.text) {
+              print('Acceso aceptado');
+              Navigator.pushReplacementNamed(context, "homeScreen");
+              return;
+            }
+          }
+        }
+        print('Usuario o contraseña incorrectos');
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Usuario o contraseña incorrectos')),
+        );
+      } else {
+        print(
+            'No existe la cuenta, verifique su usuario o su contraseña nuevamente');
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content: Text(
+                  'No existe la cuenta, verifique su usuario o su contraseña nuevamente')),
+        );
+      }
+    } catch (e) {
+      print('ERROR...' + e.toString());
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('ERROR... ' + e.toString())),
+      );
+    }
+  }
+
+  onLoginPressed() {
+    if (user.text.isEmpty || pass.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Debe completar los datos')),
+      );
+    } else if (!user.text.contains('@gmail.com')) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text('El correo electrónico debe contener un @gmail.com')),
+      );
+    } else {
+      validarDatos();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -78,14 +137,18 @@ class _LoginScreenState extends State<LoginScreen> {
                       }
                     }
                   }*/
-                  const TextField(                    
-                    decoration: InputDecoration(
+                  TextField(
+                    controller: user,
+                    style: const TextStyle(
+                        color: Colors
+                            .white), // darle color al texto dentro del textbox
+                    decoration: const InputDecoration(
                       border: OutlineInputBorder(),
                       labelText: 'Usuario',
                       labelStyle: TextStyle(
                           color: Colors.white70), //titulo del textfield
-                      prefixIcon:
-                          Icon(Icons.text_fields, color: Colors.white70),
+                      /*prefixIcon:
+                          Icon(Icons.text_fields, color: Colors.white70),*/ //icono Tt al lado extremo del textbox
                       contentPadding:
                           EdgeInsets.symmetric(vertical: 16, horizontal: 20),
                     ),
@@ -93,15 +156,19 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(
                     height: 10,
                   ),
-                  const TextField(
-                    decoration: InputDecoration(
+                  TextField(
+                    controller: pass,
+                    style: const TextStyle(
+                        color: Colors
+                            .white), // darle color al texto dentro del textbox
+                    decoration: const InputDecoration(
                       border: OutlineInputBorder(),
                       labelText: 'Contraseña',
                       labelStyle: TextStyle(
                           color: Colors.white70), //titulo del textfield
-                      prefixIcon:
+                      /*prefixIcon:
                           Icon(Icons.text_fields, color: Colors.white70),
-                      fillColor: Colors.white,
+                      fillColor: Colors.white,*/ //icono Tt al lado extremo del textbox
                       contentPadding:
                           EdgeInsets.symmetric(vertical: 16, horizontal: 20),
                     ),
@@ -110,33 +177,46 @@ class _LoginScreenState extends State<LoginScreen> {
                     height: 35,
                   ),
                   GestureDetector(
-                      onTap: () {
+                      /*onTap: () {
                         Navigator.pushReplacementNamed(context, "homeScreen");
-                      },
+                      },*/
                       child: Container(
-                        height: size.height * 0.06,
-                        width: size.width * 0.8,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          gradient: const LinearGradient(
-                            colors: [
-                              Color.fromARGB(255, 255, 0, 85),
-                              Color.fromARGB(255, 255, 115, 80)
-                            ],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
+                          height: size.height * 0.06,
+                          width: size.width * 0.8,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            gradient: const LinearGradient(
+                              colors: [
+                                Color.fromARGB(255, 255, 0, 85),
+                                Color.fromARGB(255, 255, 115, 80)
+                              ],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
                           ),
-                        ),
-                        child: const Center(
-                          child: Text(
-                            "Iniciar sesión",
-                            style: TextStyle(
-                                fontWeight: FontWeight.w700,
-                                fontSize: 20,
-                                color: Colors.white),
-                          ),
-                        ),
-                      )),
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.transparent,
+                              shadowColor: Colors.transparent,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                            onPressed: onLoginPressed,
+                            /*print('enviando...');
+                              validarDatos();
+                              Navigator.pushReplacementNamed(
+                                  context, "homeScreen");*/
+                            child: const Center(
+                              child: Text(
+                                "Iniciar sesión",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 20,
+                                    color: Colors.white),
+                              ),
+                            ),
+                          ))),
                   const SizedBox(
                     height: 11,
                   ),

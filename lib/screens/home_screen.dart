@@ -1,6 +1,9 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:flutter/material.dart';
 import 'package:star/Models/banner_model.dart';
 import 'package:star/Models/movie_model.dart';
+import 'package:star/screens/profile_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -10,22 +13,22 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-
   TextEditingController usuario = TextEditingController();
   TextEditingController pass = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size; //add
-    const backgroundColor = Color.fromRGBO(17, 0, 32, 1); //add
-    const secondBackgroundColor = Color.fromRGBO(12, 30, 47, 1); //add
+    const backgroundColor = Color.fromRGBO(26, 16, 32, 4); //add
+    const secondBackgroundColor = Color.fromRGBO(19, 23, 26, 1); //add
 
-    final List<String> categories = ["Movies", "Series", "Deportes"]; //add
+    final List<String> categories = ["PELÍCULAS", "SERIES", "ESPN"]; //add
 
     return MaterialApp(
         debugShowCheckedModeBanner: false, //add
         title: 'StarPlus +',
         theme: ThemeData(
+          fontFamily: 'AvenirLTStd',
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
           textTheme: const TextTheme(
               //add
@@ -34,6 +37,9 @@ class _HomeScreenState extends State<HomeScreen> {
           iconTheme: const IconThemeData(color: Colors.white), //add
           useMaterial3: true,
         ),
+        routes: {
+          'profileScreen': (context) => ProfileScreen(),
+        },
         home: Scaffold(
           backgroundColor: backgroundColor,
           appBar: AppBar(
@@ -59,7 +65,11 @@ class _HomeScreenState extends State<HomeScreen> {
                     /*const Icon(
                       Icons.search,
                     ),*/
-                    ...categories.map((e) => Text(e))
+                    ...categories.map((e) => Text(
+                          e,
+                          style: TextStyle(
+                              fontWeight: FontWeight.w700, fontSize: 15),
+                        ))
                   ],
                 ),
               ),
@@ -70,43 +80,55 @@ class _HomeScreenState extends State<HomeScreen> {
                   //add
                   child: Container(
                     margin: const EdgeInsets.only(top: 25),
-                    child: Column(
+                    child: const Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const MovieListBanner(),
+                        MovieListBanner(),
                         /*ListView.builder( // -> singlechildscrollview: [  ]
                              itemCount: 1,
                              itemBuilder: (context, index) {
                              return*/
                         // "index == 0? ...(): Sized()," para que la imagen de la clase MovieList2(), aparezca en el simulador 1 sola vez
 
-                        const Text("Continuar viendo"),
-                        const SizedBox(
+                        Text(
+                          ("Continuar viendo"),
+                          style: TextStyle(
+                              fontWeight: FontWeight.w700, fontSize: 16),
+                        ),
+                        SizedBox(
                           height: 20,
                         ),
+                        MovieListContinuarViendo(),
 
-                        const MovieListContinuarViendo(),
-
-                        const Text("Acción"),
-                        const SizedBox(
+                        Text(
+                          ("Acción"),
+                          style: TextStyle(
+                              fontWeight: FontWeight.w700, fontSize: 16),
+                        ),
+                        SizedBox(
                           height: 20,
                         ),
+                        MovieListAction(),
 
-                        const MovieListAction(),
-
-                        const Text("Comedia"),
-                        const SizedBox(
+                        Text(
+                          ("Comedia"),
+                          style: TextStyle(
+                              fontWeight: FontWeight.w700, fontSize: 16),
+                        ),
+                        SizedBox(
                           height: 20,
                         ),
+                        MovieListComedy(),
 
-                        const MovieListComedy(),
-
-                        const Text("Ciencia Ficción"),
-                        const SizedBox(
+                        Text(
+                          ("Ciencia Ficción"),
+                          style: TextStyle(
+                              fontWeight: FontWeight.w700, fontSize: 16),
+                        ),
+                        SizedBox(
                           height: 20,
                         ),
-
-                        const MovieListScienceFiction()
+                        MovieListScienceFiction()
                       ],
                     ),
                   ),
@@ -116,17 +138,25 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           bottomNavigationBar: Container(
               color: secondBackgroundColor,
-              padding: const EdgeInsets.symmetric(vertical: 15),
-              child: const SafeArea(
+              padding: const EdgeInsets.symmetric(vertical: 7),
+              child: SafeArea(
                 bottom: true,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    Icon(Icons.home),
-                    Icon(Icons.search),
-                    Icon(Icons.add),
-                    Icon(Icons.download),
-                    Icon(Icons.info)
+                    const Icon(Icons.home),
+                    const Icon(Icons.search),
+                    const Icon(Icons.add),
+                    const Icon(Icons.download),
+                    IconButton(
+                      icon: CircleAvatar(
+                        radius: 15,
+                        backgroundImage: AssetImage('assets/perfil1.1.JPG'),
+                      ),
+                      onPressed: () {
+                        Navigator.pushNamed(context, "profileScreen");
+                      },
+                    ),
                   ],
                 ),
               )),
@@ -153,29 +183,11 @@ class MovieListContinuarViendo extends StatelessWidget {
           itemCount: catalogos.length,
           itemBuilder: (context, index) {
             return Container(
-                //width: size.width * 0.35, //add
                 margin: const EdgeInsets.symmetric(horizontal: 10),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
                   //color: Colors.white, //add
                 ), //add
-                /*child: Row(
-                  children: [
-                    Container(
-                      child: Column(
-                        children: [
-                          Image.asset(
-                            catalogos[index].image,
-                            width: size.width * 0.3,
-                            height: size.height * 0.17,
-                            fit: BoxFit.cover,
-                          ),
-                          Text(catalogos[index].title),
-                        ],
-                      ),
-                    )
-                  ],
-                )*/
                 child: Column(
                   children: [
                     ClipRRect(
@@ -187,10 +199,11 @@ class MovieListContinuarViendo extends StatelessWidget {
                         fit: BoxFit.cover,
                       ),
                     ),
-                    SizedBox(height: 5),
+                    const SizedBox(height: 5),
                     Text(
                       catalogos[index].title,
-                      style: TextStyle(fontSize: 14),
+                      style: const TextStyle(
+                          fontWeight: FontWeight.w700, fontSize: 14),
                       textAlign: TextAlign.center,
                     ),
                   ],
@@ -250,10 +263,11 @@ class MovieListAction extends StatelessWidget {
                         fit: BoxFit.cover,
                       ),
                     ),
-                    SizedBox(height: 5),
+                    const SizedBox(height: 5),
                     Text(
                       catalogos[index].title,
-                      style: TextStyle(fontSize: 14),
+                      style: const TextStyle(
+                          fontWeight: FontWeight.w700, fontSize: 14),
                       textAlign: TextAlign.center,
                     ),
                   ],
@@ -312,10 +326,11 @@ class MovieListComedy extends StatelessWidget {
                         fit: BoxFit.cover,
                       ),
                     ),
-                    SizedBox(height: 5),
+                    const SizedBox(height: 5),
                     Text(
                       catalogos[index].title,
-                      style: TextStyle(fontSize: 14),
+                      style: const TextStyle(
+                          fontWeight: FontWeight.w700, fontSize: 14),
                       textAlign: TextAlign.center,
                     ),
                   ],
@@ -374,10 +389,11 @@ class MovieListScienceFiction extends StatelessWidget {
                         fit: BoxFit.cover,
                       ),
                     ),
-                    SizedBox(height: 5),
+                    const SizedBox(height: 5),
                     Text(
                       catalogos[index].title,
-                      style: TextStyle(fontSize: 14),
+                      style: const TextStyle(
+                          fontWeight: FontWeight.w700, fontSize: 14),
                       textAlign: TextAlign.center,
                     ),
                   ],
@@ -422,7 +438,11 @@ class MovieListBanner extends StatelessWidget {
                             height: size.height * 0.5,
                             fit: BoxFit.cover,
                           ),
-                          Text(sponsors[index].title),
+                          Text(
+                            sponsors[index].title,
+                            style: const TextStyle(
+                                fontWeight: FontWeight.w700, fontSize: 14),
+                          ),
                         ])),
                   ],
                 ));
